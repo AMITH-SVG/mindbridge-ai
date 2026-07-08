@@ -5,6 +5,7 @@ import path from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: process.env.GITHUB_PAGES === 'true' ? '/mindbridge-ai/' : '/',
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
