@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mindbridge_db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    restart: always
+
+  server:
+    build: ./server
+    container_name: mindbridge_server
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://mongodb:27017/mindbridge
+      - JWT_SECRET=e7b4fa8d9e2c6b4fa8d9e2c6b4fa8d9e2c6b4fa8d9e2c6b4
+      - JWT_REFRESH_SECRET=d8a3fa8c7d1b5fa8c7d1b5fa8c7d1b5fa8c7d1b5fa8c7d
+      - CLIENT_URL=http://localhost
+      - EMAIL_HOST=smtp.mailtrap.io
+      - EMAIL_PORT=2525
+      - EMAIL_USER=test_user
+      - EMAIL_PASS=test_pass
+      - EMAIL_FROM=no-reply@mindbridge.edu
+    depends_on:
+      - mongodb
+    restart: always
+
+  client:
+    build: ./client
+    container_name: mindbridge_client
+    ports:
+      - "80:80"
+    environment:
+      - VITE_API_URL=http://localhost:5000/api
+    depends_on:
+      - server
+    restart: always
+
+volumes:
+  mongodb_data:
